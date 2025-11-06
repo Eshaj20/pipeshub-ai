@@ -1,16 +1,25 @@
-from app.sources.client.http.http_client import HTTPClient
-
+from app.sources.client.http import HTTPClient
 
 class NewRelicClient(HTTPClient):
     """
-    NewRelicClient helps connect to New Relic REST APIs.
-    Uses API key authentication.
+    Client for interacting with the New Relic REST API v2.
     """
 
     def __init__(self, api_key: str):
-        base_url = "https://api.newrelic.com/v2"
-        headers = {
+        super().__init__(base_url="https://api.newrelic.com/v2/")
+        self.headers = {
             "Api-Key": api_key,
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
         }
-        super().__init__(base_url=base_url, headers=headers)
+
+    def list_applications(self):
+        """Get all applications."""
+        return self.get("applications.json")
+
+    def get_application(self, app_id: int):
+        """Get a specific application's details."""
+        return self.get(f"applications/{app_id}.json")
+
+    def get_application_metrics(self, app_id: int):
+        """Get metrics for a specific app."""
+        return self.get(f"applications/{app_id}/metrics.json")
